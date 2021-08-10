@@ -1,23 +1,25 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
-func (h *Handler) getItems(g *gin.Context) {
-
-}
-
-func (h *Handler) getItemByID(g *gin.Context) {
+func (h *Handler) getItems(c *gin.Context) {
 
 }
 
-func (h *Handler) createItem(g *gin.Context) {
+func (h *Handler) getItemByID(c *gin.Context) {
 
 }
 
-func (h *Handler) updateItem(g *gin.Context) {
+func (h *Handler) createItem(c *gin.Context) {
 
 }
 
-func (h *Handler) deleteItem(g *gin.Context) {
+func (h *Handler) updateItem(c *gin.Context) {
+
+}
+
+func (h *Handler) deleteItem(c *gin.Context) {
 
 }

@@ -33,3 +33,14 @@ func (a *AuthPostgres) CreateUser(user *types.User) (int, error) {
 
 	return id, nil
 }
+
+func (a *AuthPostgres) GetUser(username, pwd string) (*types.User, error) {
+	var user types.User
+
+	query := fmt.Sprintf("SELECT id FROM %s WHERE username=$1 AND password=$2;", userTable)
+	if err := a.db.Get(&user, query, username, pwd); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}

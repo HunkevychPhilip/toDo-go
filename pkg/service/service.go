@@ -6,7 +6,9 @@ import (
 )
 
 type Authorization interface {
-	CreateUser(user *types.User) (int, error)
+	CreateUser(user *types.User) (id int, err error)
+	GenerateToken(data *types.SignInData) (token string, err error)
+	ParseToken(str string) (id int, err error)
 }
 
 type TodoList interface {
