@@ -6,25 +6,27 @@ import (
 )
 
 type Authorization interface {
-	CreateUser(user *types.User) (id int, err error)
-	GenerateToken(data *types.SignInData) (token string, err error)
-	ParseToken(str string) (id int, err error)
+	CreateUser(*types.User) (int, error)
+	GenerateToken(*types.SignInData) (string, error)
+	ParseToken(string) (int, error)
 }
 
-type TodoList interface {
+type List interface {
+	Create(int, *types.List) (int, error)
 }
 
-type TodoItem interface {
+type Item interface {
 }
 
 type Service struct {
 	Authorization
-	TodoList
-	TodoItem
+	List
+	Item
 }
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
+		List:          NewListService(repos.List),
 	}
 }

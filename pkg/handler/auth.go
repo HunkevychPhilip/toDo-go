@@ -34,12 +34,12 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 
-	id, err := h.services.Authorization.CreateUser(&user)
+	userID, err := h.services.Authorization.CreateUser(&user)
 	if err != nil {
 		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusInternalServerError, err.Error())
 
 		return
 	}
 
-	h.utilities.ResponseHandler.CommonResponseJSON(c, http.StatusOK, "id", id)
+	h.utilities.ResponseHandler.CommonResponseJSON(c, http.StatusOK, "user_id", userID)
 }

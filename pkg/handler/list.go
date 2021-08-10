@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/HunkevychPhilip/todo/pkg/types"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -14,13 +15,27 @@ func (h *Handler) getListByID(c *gin.Context) {
 }
 
 func (h *Handler) createList(c *gin.Context) {
-	id, ok := c.Get(CtxUserID)
-	if ok {
-		h.utilities.ResponseHandler.CommonResponseJSON(c, http.StatusOK, "id", id)
+	userID, err := h.getUserID(c)
+	if err != nil {
+		return
+	}
+
+	var list types.List
+	err = c.ShouldBindJSON(&list)
+	if err != nil {
+		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusBadRequest, err.Error())
 
 		return
 	}
-	h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusUnauthorized, "Something went wrong")
+
+	listID, err := h.services.List.Create(userID, &list)
+	if err != nil {
+		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusInternalServerError, err.Error())
+
+		return
+	}
+
+	h.utilities.ResponseHandler.CommonResponseJSON(c, http.StatusOK, "list_id", listID)
 }
 
 func (h *Handler) updateList(c *gin.Context) {
