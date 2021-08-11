@@ -13,8 +13,9 @@ type Authorization interface {
 
 type List interface {
 	Create(int, *types.List) (int, error)
-	GetUserLists(int) ([]*types.List, error)
-	GetList(int, int) (*types.List, error)
+	Get(int, int) (*types.List, error)
+	GetAll(int) ([]*types.List, error)
+	Delete(int, int) error
 }
 
 type Item interface {

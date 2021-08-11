@@ -13,7 +13,7 @@ func (h *Handler) getUserLists(c *gin.Context) {
 		return
 	}
 
-	lists, err := h.services.List.GetUserLists(userID)
+	lists, err := h.services.List.GetAll(userID)
 	if err != nil {
 		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusInternalServerError, err.Error())
 
@@ -35,6 +35,7 @@ func (h *Handler) getListByID(c *gin.Context) {
 
 		return
 	}
+
 	listID, err := strconv.Atoi(val)
 	if err != nil {
 		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusBadRequest, "id param is of invalid type")
@@ -42,7 +43,7 @@ func (h *Handler) getListByID(c *gin.Context) {
 		return
 	}
 
-	list, err := h.services.List.GetList(userID, listID)
+	list, err := h.services.List.Get(userID, listID)
 	if err != nil {
 		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusInternalServerError, err.Error())
 
@@ -58,7 +59,7 @@ func (h *Handler) createList(c *gin.Context) {
 		return
 	}
 
-	list := new(types.List)
+	var list types.List
 	err = c.ShouldBindJSON(&list)
 	if err != nil {
 		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusBadRequest, err.Error())
@@ -66,7 +67,7 @@ func (h *Handler) createList(c *gin.Context) {
 		return
 	}
 
-	listID, err := h.services.List.Create(userID, list)
+	listID, err := h.services.List.Create(userID, &list)
 	if err != nil {
 		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusInternalServerError, err.Error())
 
@@ -81,5 +82,31 @@ func (h *Handler) updateList(c *gin.Context) {
 }
 
 func (h *Handler) deleteList(c *gin.Context) {
+	userID, err := h.getUserID(c)
+	if err != nil {
+		return
+	}
 
+	val := c.Param("id")
+	if val == "" {
+		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusBadRequest, "id param is missing")
+
+		return
+	}
+
+	listID, err := strconv.Atoi(val)
+	if err != nil {
+		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusBadRequest, "id param is of invalid type")
+
+		return
+	}
+
+	err = h.services.List.Delete(userID, listID)
+	if err != nil {
+		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusInternalServerError, err.Error())
+
+		return
+	}
+
+	h.utilities.ResponseHandler.CommonResponseJSON(c, http.StatusOK, "status", "deleted")
 }

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"github.com/HunkevychPhilip/todo/pkg/types"
 	"github.com/jmoiron/sqlx"
@@ -48,7 +49,21 @@ func (l *ListPostgres) Create(userID int, list *types.List) (int, error) {
 	return listID, tx.Commit()
 }
 
-func (l *ListPostgres) GetUserLists(userID int) ([]*types.List, error) {
+func (l *ListPostgres) Get(userID, listID int) (*types.List, error) {
+	var list types.List
+
+	getListQuery := fmt.Sprintf(
+		"SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2;",
+		todoListsTable, usersListsTable)
+
+	if err := l.db.Get(&list, getListQuery, userID, listID); err != nil {
+		return nil, err
+	}
+
+	return &list, nil
+}
+
+func (l *ListPostgres) GetAll(userID int) ([]*types.List, error) {
 	var lists []*types.List
 
 	getListsQuery := fmt.Sprintf(
@@ -62,16 +77,24 @@ func (l *ListPostgres) GetUserLists(userID int) ([]*types.List, error) {
 	return lists, nil
 }
 
-func (l *ListPostgres) GetList(userID, listID int) (*types.List, error) {
-	var list types.List
-
-	getListQuery := fmt.Sprintf(
-		"SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2;",
+func (l *ListPostgres) Delete(userID, listID int) error {
+	deleteListQuery := fmt.Sprintf(
+		"DELETE FROM %s tl USING %s ul WHERE tl.id = ul.list_id AND ul.user_id = $1 AND ul.list_id = $2;",
 		todoListsTable, usersListsTable)
 
-	if err := l.db.Get(&list, getListQuery, userID, listID); err != nil {
-		return nil, err
+	res, err := l.db.Exec(deleteListQuery, userID, listID)
+	if err != nil {
+		return err
 	}
 
-	return &list, nil
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affected == 0 {
+		return errors.New("no such list")
+	}
+
+	return nil
 }
