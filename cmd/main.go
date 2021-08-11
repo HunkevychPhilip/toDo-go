@@ -19,7 +19,7 @@ func main() {
 	}
 
 	if err := godotenv.Load(); err != nil {
-		logrus.Fatalf("Cound not read env var: %s", err.Error())
+		logrus.Fatalf("Cound not read env variables: %s", err.Error())
 	}
 
 	db, err := repository.NewPostgresDB(repository.Config{

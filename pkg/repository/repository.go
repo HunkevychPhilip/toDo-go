@@ -12,6 +12,7 @@ type Authorization interface {
 
 type List interface {
 	Create(int, *types.List) (int, error)
+	GetUserLists(int) ([]*types.List, error)
 }
 
 type Item interface {

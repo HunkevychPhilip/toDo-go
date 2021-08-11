@@ -47,3 +47,17 @@ func (l *ListPostgres) Create(userID int, list *types.List) (int, error) {
 
 	return listID, tx.Commit()
 }
+
+func (l *ListPostgres) GetUserLists(userID int) ([]*types.List, error) {
+	var lists []*types.List
+
+	getListsQuery := fmt.Sprintf(
+		"SELECT tl.id, tl.title, tl.description FROM %s ul INNER JOIN %s tl on tl.id = ul.list_id WHERE ul.user_id = $1;",
+		usersListsTable, todoListsTable)
+	if err := l.db.Select(&lists, getListsQuery, userID); err != nil {
+		return nil, err
+
+	}
+
+	return lists, nil
+}

@@ -40,14 +40,14 @@ func (h *Handler) userIdentity(c *gin.Context) {
 func (h *Handler) getUserID(c *gin.Context) (int, error) {
 	val, ok := c.Get(CtxUserID)
 	if !ok {
-		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusOK, "user id not found")
+		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusUnauthorized, "user id not found")
 
 		return 0, errors.New("user id not found")
 	}
 
 	id, ok := val.(int)
 	if !ok {
-		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusOK, "invalid user id type")
+		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusUnauthorized, "invalid user id type")
 
 		return 0, errors.New("invalid user id type")
 	}

@@ -6,7 +6,20 @@ import (
 	"net/http"
 )
 
-func (h *Handler) getLists(c *gin.Context) {
+func (h *Handler) getUserLists(c *gin.Context) {
+	userID, err := h.getUserID(c)
+	if err != nil {
+		return
+	}
+
+	lists, err := h.services.List.GetUserLists(userID)
+	if err != nil {
+		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusInternalServerError, err.Error())
+
+		return
+	}
+
+	h.utilities.ResponseHandler.CommonResponseJSON(c, http.StatusOK, "user_lists", lists)
 
 }
 
@@ -20,7 +33,7 @@ func (h *Handler) createList(c *gin.Context) {
 		return
 	}
 
-	var list types.List
+	list := new(types.List)
 	err = c.ShouldBindJSON(&list)
 	if err != nil {
 		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusBadRequest, err.Error())
@@ -28,7 +41,7 @@ func (h *Handler) createList(c *gin.Context) {
 		return
 	}
 
-	listID, err := h.services.List.Create(userID, &list)
+	listID, err := h.services.List.Create(userID, list)
 	if err != nil {
 		h.utilities.ResponseHandler.ErrorResponseJSON(c, http.StatusInternalServerError, err.Error())
 
