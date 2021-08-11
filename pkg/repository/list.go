@@ -61,3 +61,17 @@ func (l *ListPostgres) GetUserLists(userID int) ([]*types.List, error) {
 
 	return lists, nil
 }
+
+func (l *ListPostgres) GetList(userID, listID int) (*types.List, error) {
+	var list types.List
+
+	getListQuery := fmt.Sprintf(
+		"SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2;",
+		todoListsTable, usersListsTable)
+
+	if err := l.db.Get(&list, getListQuery, userID, listID); err != nil {
+		return nil, err
+	}
+
+	return &list, nil
+}

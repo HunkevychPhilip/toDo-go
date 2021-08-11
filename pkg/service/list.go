@@ -22,3 +22,7 @@ func (tds *ListService) Create(userID int, todoList *types.List) (int, error) {
 func (tds *ListService) GetUserLists(userID int) ([]*types.List, error) {
 	return tds.repo.GetUserLists(userID)
 }
+
+func (tds *ListService) GetList(userID, listID int) (*types.List, error) {
+	return tds.repo.GetList(userID, listID)
+}
